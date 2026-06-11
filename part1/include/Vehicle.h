@@ -1,5 +1,5 @@
 #pragma once
-# include <string>
+#include <string>
 #include <vector>
 #include <sstream>
 #include <set>
@@ -36,59 +36,23 @@ class Vehicle{
 
     public:
     //constructor-
-    Vehicle(const std::string &n, float b) : name(n), battery_level(b), status("idle") 
-    {
-        add_log_entry("Vehicle '"+name+"'created, battery= "+std::to_string(b)+ "%");
-
-    }
+    Vehicle(const std::string &n, float b) : name(n), battery_level(b), status("idle");
     //destructor-
     virtual ~Vehicle()=default;
     virtual std::string get_info() const=0;
 
-    void drain_battery(float amount){
-        if(battery_level<=0.0f)
-        throw BatteryDepletedError("Battery depleted on '"+name+"'");
-        battery_level=std::max(0.0f, battery_level-amount);
-        add_log_entry("Drained "+std::to_string(amount)+ "% Remaining= "+ std::to_string(battery_level)+"%");
-
-    }
+    void drain_battery(float amount);
     //charge battery
-    void charge_battery(float amount, int duration_seconds){
-        if(status!="charging")
-        throw InvalidStateError("Cannot charge '"+name+"', status is not 'charging'");
-        battery_level=std::min(100.0f, battery_level+amount);
-        add_log_entry("Charged "+std::to_string(amount)+"% in "+std::to_string(duration_seconds)+" seconds. Level="+std::to_string(battery_level)+"%");
-
-    }
-    //is_critical returns true when battery below 20%
-    bool is_critical() const{
-        return battery_level<20.0f;
-    } 
+    void charge_battery(float amount, int duration_seconds);
+    bool is_critical() const;
     //to get flight log as string-
-    std::string get_flight_log() const{
-        std::ostringstream oss;
-        oss<<"Flight Log: "<<name<<"\n";
-        for(size_t i=0;i<flight_log.size(); ++i)
-            oss<<"["<<(i+1)<<"]"<<flight_log[i]<<"\n";
-        return oss.str();
-    }
 
-    void set_status(const std::string &new_status){
-        static const std::set<std::string> allowed={
-            "idle", "flying", "charging","emergency", "mission" , "landed"
-        };
-    if (allowed.count(new_status)==0)
-    throw InvalidStateError("Invalid status '"+new_status+"'");
-    std::string old=status;
-    status=new_status;
-    add_log_entry("Status: "+old+" to " + new_status);
-    }
+    std::string get_flight_log() const;
+    void set_status(const std::string &new_status);
    
-    //public access, read-only to private members
-
-    const std::string &get_name() const {return name;}
-    float get_battery() const {return battery_level;}
-    const std::string&get_status() const {return status;}
-
+    const std::string &get_name() const ;
+    float get_battery() const;
+    const std::string&get_status() const ;
+    void add_log_entry(const std::string& entry);
 
 };
